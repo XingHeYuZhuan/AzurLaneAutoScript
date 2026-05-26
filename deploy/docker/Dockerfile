@@ -37,13 +37,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     adb \
     openssh-client \
     libgomp1 \
-    libavformat58 \
-    libavcodec58 \
-    libavdevice58 \
-    libavutil56 \
-    libswscale5 \
-    libswresample3 \
-    libavfilter7 \
+    libavformat59 \
+    libavcodec59 \
+    libavdevice59 \
+    libavutil57 \
+    libswscale6 \
+    libswresample4 \
+    libavfilter8 \
     && rm -rf /var/lib/apt/lists/* \
     && git config --global --add safe.directory '*'
 
