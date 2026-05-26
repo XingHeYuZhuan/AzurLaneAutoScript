@@ -1,7 +1,4 @@
-# ==========================================
-# 阶段 1：构建环境 (Builder)
-# ==========================================
-FROM python:3.7-slim-bullseye AS builder
+FROM python:3.7.17-slim-bookworm AS builder
 
 WORKDIR /tmp/build
 
@@ -25,12 +22,14 @@ RUN pip install --no-cache-dir --upgrade pip wheel setuptools \
     && pip install --no-cache-dir av==10.0.0 --no-build-isolation \
     && pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# ==========================================
-# 阶段 2：运行环境 (Runner) - 最终镜像
-# ==========================================
-FROM python:3.7-slim-bullseye
+RUN find /install -type d -name "tests" -exec rm -rf {} + \
+    && find /install -type d -name "__pycache__" -exec rm -rf {} + \
+    && find /install -name "*.pyc" -delete \
+    && find /install -name "*.pyo" -delete \
+    && find /install -name "*.exe" -delete
 
-# 设置工作目录
+FROM python:3.7.17-slim-bookworm
+
 WORKDIR /app/AzurLaneAutoScript
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -48,8 +47,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git config --global --add safe.directory '*'
 
-# 只把编译好的 Python 依赖库复制过来
 COPY --from=builder /install /usr/local
 
+RUN find /usr/local -type d -name "__pycache__" -exec rm -rf {} +
 
 CMD ["python", "gui.py"]
